@@ -81,6 +81,16 @@ export default {
         },
         reset() {
             this.getDataInfo(this.id);
+            if(this.conditionJumpList){
+                this.conditionJumpList = []
+            }
+            if(this.dateRange){
+                this.dateRange = ''
+            }
+            if(this.isRequireAnswer){
+                this.isRequireAnswer = false
+            }
+            
         }
     }
 

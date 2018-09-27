@@ -38,6 +38,9 @@ export default {
                 if(this.type=='user'){
                     titie='成员管理'
                 }
+                if(this.type=='copy'){
+                    titie='复制'
+                }
                 if(this.type=='down'){
                     titie='下载'
                 }

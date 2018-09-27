@@ -1158,12 +1158,17 @@ const roles = [
           {
             name: "保存内容",
             role: "/vote/saveContent",
-            api: [api.voteSaveContent]
+            api: [api.voteSaveContent,api.updateTime]
           },
           {
             name: "详情",
             role: "/vote/view",
             api: [api.voteGet]
+          },
+          {
+            name: "查询结果",
+            role: "/vote/result",
+            api: [api.screen,api.screenList,api.viewResult]
           },
           {
             name: "添加",
@@ -1181,6 +1186,23 @@ const roles = [
             api: [api.voteDelete]
           }
         ]
+      },
+      {
+        name: '问卷统计',
+        role: '/statistics',
+        api: [],
+        children: [
+            {
+              name: '首页活动统计',
+              role: '/active/list',
+              api: [api.activitystatistics], 
+            },
+            {
+              name: '退租问卷统计',
+              role: '/retire/list',
+              api: [api.activitystatistics],
+            }
+            ]
       },
       {
         name: "留言管理",

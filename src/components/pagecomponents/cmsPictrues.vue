@@ -150,15 +150,14 @@ components: {cmsPictruesItems},
              if(this.propList.length>0){
                 this.fileList=this.propList;
              } 
-              
           },
           deep:true
       }
   },
   created() {
-         if(this.propList.length>0){
-                this.fileList=this.propList;
-             } 
+    if(this.propList.length>0){
+          this.fileList=this.propList;
+    } 
     this.data = signParams(this.params, process.env.appKey);
   }
 };

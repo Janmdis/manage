@@ -42,7 +42,7 @@
           </el-dialog>
     </div>
     <!-- 水印 -->
-      <el-checkbox v-model="params.mark" class="mark-box" v-if="isMark">水印</el-checkbox>
+      <el-checkbox v-model="mark"  class="mark-box" v-if="isMark">水印</el-checkbox>
     </div>
 </template>
 
@@ -52,52 +52,57 @@ import { signParams } from "@/untils/sign";
 import api from "@/api/api";
 var rand = getRand();
 export default {
-    name:'cms-upload',
-props:{
-    field:{
-        type:String,
-         default:'', 
+  name: "cms-upload",
+  props: {
+    field: {
+      type: String,
+      default: ""
     },
-     src:{
-         type:String,
-         default:'',
-     },
-     isMark:{
-       type:Boolean,
-       default:true,
-     },
-     index:{
-      type:Number,
-      default:0,
-     },
-     pIndex:{
-      type:Number,
-      default:0,
-     }
-},
+    src: {
+      type: String,
+      default: ""
+    },
+    isMark: {
+      type: Boolean,
+      default: true
+    },
+    index: {
+      type: Number,
+      default: 0
+    },
+    pIndex: {
+      type: Number,
+      default: 0
+    }
+  },
   data() {
     return {
-      imageUrl:(this.src !='' && this.src.indexOf('http') <0) ? this.$getUrl() + this.src : this.src,
+      imageUrl:
+        this.src != "" && this.src.indexOf("http") < 0
+          ? this.$getUrl() + this.src
+          : this.src,
+      mark: this.isWatermarke,
       upLoadUrl: this.$store.state.sys.baseUrl + api.bsaeUpload,
-      params:{
-          appId: process.env.appId,
-          sessionKey: localStorage.getItem("sessionKey"),
-          type: "image",
-          nonceStr: rand,
-          mark:false,
+      params: {
+        appId: process.env.appId,
+        sessionKey: localStorage.getItem("sessionKey"),
+        type: "image",
+        nonceStr: rand,
+        mark: false
       },
-      data:{},
+      data: {},
       percentage: 0,
       status: "",
       uploadStar: false,
-      dialogVisible:false
+      dialogVisible: false
     };
   },
-   
+
   methods: {
-    
-    handleAvatarSuccess(res, file) {//上传成功服务器响应
-      if (res.code == "200"&&res.body!='') {
+
+    handleAvatarSuccess(res, file) {
+      //上传成功服务器响应
+      if (res.code == "200" && res.body != "") {
         this.status = "success";
         setTimeout(() => {
           this.uploadStar = false;
@@ -105,30 +110,43 @@ props:{
           this.percentage = 0;
           if (res.body.uploadPath.indexOf("http") >= 0) {
             this.imageUrl = res.body.uploadPath;
-            this.$emit('get',res.body.uploadPath,this.field,this.index,this.pIndex);
-             this.$emit('change',res.body.uploadPath,this.index);
+            this.$emit(
+              "get",
+              res.body.uploadPath,
+              this.field,
+              this.index,
+              this.pIndex
+            );
+            this.$emit("change", res.body.uploadPath, this.index);
           } else {
             this.imageUrl = this.$getUrl() + res.body.uploadPath;
-            this.$emit('get',res.body.uploadPath,this.field,this.index,this.pIndex);
-             this.$emit('change',res.body.uploadPath,this.index,this.pIndex);
+            this.$emit(
+              "get",
+              res.body.uploadPath,
+              this.field,
+              this.index,
+              this.pIndex
+            );
+            this.$emit("change", res.body.uploadPath, this.index, this.pIndex);
           }
         }, 1000);
       } else {
-        this.errorMessage(res.code+":"+res.message);
+        this.errorMessage(res.code + ":" + res.message);
         this.status = "exception";
         setTimeout(() => {
           this.uploadStar = false;
           this.percentage = 0;
           this.status = "";
           this.imageUrl = "";
-          this.$emit('get',this.src,this.field,this.index,this.pIndex);
-           this.$emit('change',this.src,this.index,this.pIndex);
+          this.$emit("get", this.src, this.field, this.index, this.pIndex);
+          this.$emit("change", this.src, this.index, this.pIndex);
         }, 1000);
 
         this.errorMessage("上传失败:" + res.code);
       }
     },
-    handleAvatarProgress(event, file, fileList) {//进度
+    handleAvatarProgress(event, file, fileList) {
+      //进度
       this.imageUrl = "";
       this.uploadStar = true;
       this.percentage = parseInt(event.percent.toFixed(1));
@@ -137,36 +155,35 @@ props:{
       this.uploadStar = false;
       this.percentage = 0;
       this.status = "";
-       this.$emit('get','',this.field,this.index,this.pIndex);
-       this.$emit('change','',this.index,this.pIndex);
+      this.$emit("get", "", this.field, this.index, this.pIndex);
+      this.$emit("change", "", this.index, this.pIndex);
       this.imageUrl = "";
-      
     }
   },
-  created(){
-    this.data=signParams(this.params,process.env.appKey);
-       //console.log("src:"+this.src);
-      // this.imageUrl = this.src.indexOf('http') >= 0 ?this.src : this.getUrl()+this.src;
+  created() {
+    console.log(this.isWatermarke);
+    this.data = signParams(this.params, process.env.appKey);
+    //console.log("src:"+this.src);
+    // this.imageUrl = this.src.indexOf('http') >= 0 ?this.src : this.getUrl()+this.src;
   },
-  watch:{
-      src(curVal,oldVal){
-       //console.log("curVal:"+curVal);
-　　　　　　　　　  if(curVal.indexOf("http") >= 0){
-                         this.imageUrl = curVal;              
-                    }else{
-                       this.imageUrl = this.$getUrl() + curVal;  
-                    }
-                    // if(curVal!=''){
-                    //     this.$emit('change',this.imageUrl,this.index,this.pIndex);
-                    // } 
-　　　　　　　　},
-      params:{
-        handler(curVal,oldVal){
-            
-             this.data=signParams(curVal,process.env.appKey);             
-        },
-        deep:true
+  watch: {
+    src(curVal, oldVal) {
+      //console.log("curVal:"+curVal);
+      if (curVal.indexOf("http") >= 0) {
+        this.imageUrl = curVal;
+      } else {
+        this.imageUrl = curVal ? this.$getUrl() + curVal : "";
       }
+      // if(curVal!=''){
+      //     this.$emit('change',this.imageUrl,this.index,this.pIndex);
+      // }
+    },
+    params: {
+      handler(curVal, oldVal) {
+        this.data = signParams(curVal, process.env.appKey);
+      },
+      deep: true
+    }
   }
 };
 </script>
@@ -178,14 +195,14 @@ $height: 130px;
   display: flex;
   align-items: center;
 }
-.cms-upload-box{
-   position: relative;
-border: 1px dashed #d9d9d9;
+.cms-upload-box {
+  position: relative;
+  border: 1px dashed #d9d9d9;
   border-radius: 6px;
-   width: $width;
+  width: $width;
   height: $width;
 }
-.mark-box{
+.mark-box {
   margin-left: 10px;
 }
 .avatar-uploader .el-upload:hover .img-porp {
@@ -216,7 +233,7 @@ border: 1px dashed #d9d9d9;
   top: 50%;
   left: 50%;
   margin-left: -51px;
-    margin-top: -15px;
+  margin-top: -15px;
 }
 
 .cms-zoom-font {
@@ -238,7 +255,7 @@ border: 1px dashed #d9d9d9;
   height: 100%;
   top: 0;
   display: none;
-  z-index:49;
+  z-index: 49;
 }
 .cms-img-bottom {
   width: 100%;
@@ -272,7 +289,6 @@ border: 1px dashed #d9d9d9;
   top: 0;
   width: $width;
   height: $height;
-  z-index:888;
+  z-index: 888;
 }
-
 </style>

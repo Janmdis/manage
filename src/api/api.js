@@ -455,7 +455,12 @@ const api = {
   queryChooseNews: setAdminApi("content/queryChooseNews"), //请求列表接口
   queryChooseNewsPage: setAdminApi("content/queryChooseNewsPage"), //请求列表分页接口"/content/chooseNewsPage")
   importNews: setAdminApi("content/importNews"), //请求批量导入接口
-  hasSensitivity: setAdminApi("content/hasSensitivity") //文章存在敏感词批量导入接口
+  hasSensitivity: setAdminApi("content/hasSensitivity"), //文章存在敏感词批量导入接口
+  activitystatistics: "/api/voteTopic/queryPointCount",//活动问卷和退租问卷
+  updateTime: "/api/voteTopic/updateTime",//更新结束日期
+  screen: "/api/voteTopic/queryQuestions",//题目列表查询接口 
+  screenList: "/api/voteTopic/queryItems",//对应选项列表查询接口
+  viewResult: "/api/voteTopic/viewResult"//筛选答案
 };
 
 export default api;

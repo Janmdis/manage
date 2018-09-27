@@ -38,7 +38,6 @@
                     ></cms-button>
                 </div>
             </el-table-column>
-            </el-table-column>
          </el-table> 
           <!-- 表格底部 -->
         <div class="cms-list-footer ">

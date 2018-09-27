@@ -47,7 +47,7 @@ var rand = getRand();
 export default {
   name: "cms-file-upload",
   props: {
-    propList:{},
+    propList: {},
     uploadName: {
       type: String,
       default: "上传"
@@ -66,7 +66,7 @@ export default {
       type: Number,
       default: 9999
     },
-    
+
     //是否显示上传文件列表
     showFileList: {
       type: Boolean,
@@ -92,18 +92,20 @@ export default {
       type: Boolean,
       default: false
     },
-    btnLabel:{
-      type:String,
-      default:'批量上传',
+    btnLabel: {
+      type: String,
+      default: "批量上传"
     },
-    field:{
-       type:String,
-       default:'',
+    field: {
+      type: String,
+      default: ""
     }
   },
   data() {
     return {
-      uploadUrl:this.$store.state.sys.baseUrl +(this.action == "" ? this.$api.bsaeUpload : this.action),
+      uploadUrl:
+        this.$store.state.sys.baseUrl +
+        (this.action == "" ? this.$api.bsaeUpload : this.action),
       params: {
         appId: process.env.appId,
         sessionKey: localStorage.getItem("sessionKey"),
@@ -112,86 +114,86 @@ export default {
         mark: false,
         uploadPath: this.uploadPath
       },
-      obj: [{
-        name: "",
-        path: "",
-      }],
+      obj: [
+        {
+          name: "",
+          path: ""
+        }
+      ],
       data: {},
       fileList: [],
-      uploading:false,
-      percentage:0,
-      status:'',
-      fileName:'',
+      uploading: false,
+      percentage: 0,
+      status: "",
+      fileName: ""
     };
   },
   methods: {
-      onProgress(event, file, fileList){
-           this.status='';
-           this.uploading=true;
-           this.fileName=file.name;
-           this.percentage= parseInt(event.percent);
-      },
-      delFileList(index){
-       
-          this.fileList.splice(index,1);
-           this.$emit("change",this.fileList);
-             this.$emit("get",'',this.field);
-      },
-       onSuccess(response, file, fileList) {
-            if(response.code=='200'&&response.body!=''){
-                 this.status='success'; 
-                 if(this.multiple){
-                   this.fileList.push({name:response.body.fileName,path:response.body.uploadPath});
-                 }else{
-                     this.fileList=[{name:response.body.uploadPath,path:response.body.uploadPath}]
-                 }        
-            }else{
-                this.status='exception';
-                this.errorMessage(response.code+":"+response.message);
-            }
-              setTimeout(() => {
-                      this.uploading=false;
-                      this.fileName='';
-                    this.percentage= 0;  
-              }, 500);
-            this.$emit("change",this.fileList);
-            this.$emit("get",this.fileList[0].path,this.field);
+    onProgress(event, file, fileList) {
+      this.status = "";
+      this.uploading = true;
+      this.fileName = file.name;
+      this.percentage = parseInt(event.percent);
     },
-    
+    delFileList(index) {
+      this.fileList.splice(index, 1);
+      this.$emit("change", this.fileList);
+      this.$emit("get", "", this.field);
+    },
+    onSuccess(response, file, fileList) {
+      if (response.code == "200" && response.body != "") {
+        this.status = "success";
+        if (this.multiple) {
+          this.fileList.push({
+            name: response.body.fileName,
+            path: response.body.uploadPath
+          });
+        } else {
+          this.fileList = [
+            { name: response.body.uploadPath, path: response.body.uploadPath }
+          ];
+        }
+      } else {
+        this.status = "exception";
+        this.errorMessage(response.code + ":" + response.message);
+      }
+      setTimeout(() => {
+        this.uploading = false;
+        this.fileName = "";
+        this.percentage = 0;
+      }, 500);
+      this.$emit("change", this.fileList);
+      this.$emit("get", this.fileList[0].path, this.field);
+    },
+
     beforeAvatarUpload(file) {},
     onError(err, file, fileList) {
       this.errorMessage("上传失败");
       this.$refs["upload"].clearFiles();
       this.$emit("on-error", file, fileList);
       this.$emit("change", this.obj);
-       this.$emit("get",'',this.field);
-    },
+      this.$emit("get", "", this.field);
+    }
   },
   created() {
-      if(this.multiple){//多图数组
-                
-                    if(this.propList){
-                       this.fileList=this.propList;
-                    }   
-             }else{//单图字符串
-             
-              
-                if(this.propList&&this.propList!=''){
-                 
-                    this.fileList=[{name:this.propList,path:this.propList}]
-                }
-             
-             }
+    if (this.multiple) {
+      //多图数组
+      if (this.propList) {
+        this.fileList = this.propList;
+      }
+    } else {
+      //单图字符串
+      if (this.propList && this.propList != "") {
+        this.fileList = [{ name: this.propList, path: this.propList }];
+      }
+    }
     this.data = signParams(this.params, process.env.appKey);
   },
-  watch:{
-     propList:{
-       handler(culVal,oldVal){
-          
-           
-       },
-       deep:true
-     }
+  watch: {
+    propList: {
+      handler(culVal, oldVal) {},
+      deep: true
+    }
   }
 };
 </script>
@@ -200,57 +202,57 @@ export default {
 .upload-attach .el-upload-list {
   width: 50%;
 }
-.file-gray{
-     font-size: 12px;
-    line-height: 1;
-    padding-top: 6px;
-    color:#acb5bb;
+.file-gray {
+  font-size: 12px;
+  line-height: 1;
+  padding-top: 6px;
+  color: #acb5bb;
 }
-.cms-file-items-box{
-    width: 740px;
+.cms-file-items-box {
+  width: 740px;
 }
-.cms-file-item{
-   width: 350px;
+.cms-file-item {
+  width: 350px;
 
-   float: left;
-   height: 30px;
-   line-height: 30px;
-   margin-top:0px !important;
-   margin-right: 30px;
-   &:nth-child(2n){
-       margin-right: 0;
-   }
-}
-.w-350{
-    width: 740px;
-}
-.cms-delete-little{
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    border-radius: 4px;
-    background: #ff8b53;
-    color: #fff;
-    font-size: 12px;
-    line-height: 16px;
-    text-align:center;
-}
-.cms-file-label{
-    overflow: hidden;
-    display: flex;
-    align-items: center;
+  float: left;
+  height: 30px;
+  line-height: 30px;
+  margin-top: 0px !important;
+  margin-right: 30px;
+  &:nth-child(2n) {
     margin-right: 0;
-    justify-content:space-between;
-    >label{
-        float: left;    
-        width: 300px;
-        overflow: hidden;
-      text-overflow:ellipsis;
-     white-space: nowrap; 
-    }
-   .cms-delete-little{
-       float:right;
-       margin-right: 10px;
-   } 
+  }
+}
+.w-350 {
+  width: 740px;
+}
+.cms-delete-little {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: #ff8b53;
+  color: #fff;
+  font-size: 12px;
+  line-height: 16px;
+  text-align: center;
+}
+.cms-file-label {
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  margin-right: 0;
+  justify-content: space-between;
+  > label {
+    float: left;
+    width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .cms-delete-little {
+    float: right;
+    margin-right: 10px;
+  }
 }
 </style>

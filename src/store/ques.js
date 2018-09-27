@@ -4,6 +4,9 @@ const quers = {
         markPage:0,
         querData:[],
         setDate:[],
+        setChildindex:"",
+        ResultOne:[],
+        ResultTwo:[],
     },
     mutations:{
         markId(state){
@@ -21,6 +24,15 @@ const quers = {
         setTableDate(state,data){ //更改数据
             state.setDate = data
         },
+        setChildindex(state,data){ //更改子数据数据
+            state.setChildindex = data
+        },
+        getResultOne(state,data){  //调查问卷的第一个下拉答案
+            state.ResultOne=data
+        },
+        getResultTwo(state,data){  //调查问卷的第二个下拉答案
+            state.ResultTwo=data
+        }
     },
     actions:{
         getquerDatas({ commit },data){ //触发获取数据
@@ -31,6 +43,15 @@ const quers = {
         },
         setTableDates({ commit },data){ //更改数据
             commit('setTableDate',data);
+        },
+        setChildindexs({ commit },data){ //更改数据
+            commit('setChildindex',data);
+        },
+        getResultOnes({ commit },data){ //更改数据
+            commit('getResultOne',data);
+        },
+        getResultTwos({ commit },data){ //更改数据
+            commit('getResultTwo',data);
         }
     }
 }

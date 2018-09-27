@@ -25,9 +25,11 @@ Vue.use(Router)
  * routes==默认路由节点
  */
 export const routes = [{
-    path: '/login',
-    name: '登录',
-    component: login,
+  path: '/login',
+  name: '登录',
+  component: login,
+    // component: resolve => { require(['@/views/operate/vote/result.vue'], resolve) },
+    // component: resolve => { require(['@/views/operate/vote/edit.vue'], resolve) },
     hidden: true
   },
   {
@@ -735,6 +737,10 @@ export const ansycRoutes = [{
               name: '问卷修改',
               component: resolve => { require(['@/views/operate/vote/edit.vue'], resolve) },
           },{
+            path: '/vote/copy',//复制问卷
+            name: '复制问卷',
+            component: resolve => { require(['@/views/operate/vote/edit.vue'], resolve) },
+        },{
             path: '/vote/result',//问卷修改
             name: '问卷结果',
             component: resolve => { require(['@/views/operate/vote/result.vue'], resolve) },

@@ -11,14 +11,14 @@
                     <span v-if="indexs!=0"   style='width:12%;display: inline-block; text-align: right;' class='c_p5' >并且</span>
                 </span>
                  <el-select v-model="item.questionPriority" style='width:25%;' class='c_p5'>
-                    <el-option v-for="(items,index) in getUserIcons" v-if="index<getLen-1" :key='index' :label="items.title" :value="items.id" @click.native="changeVal(items.id,indexs,items)"></el-option>
+                    <el-option v-for="(items,index) in getUserIcons" v-if="items.title!=''&&(index<indexShow-1)" :key='index' :label="items.title" :value="items.id" @click.native="changeVal(items.id,indexs,items)"></el-option>
                 </el-select>
                  <el-select v-model="item.conditionType" style='width:12%;' class='c_p5' >
                     <el-option label="是" :value=1></el-option>
                     <el-option label="不是" :value=2></el-option>
                 </el-select>
                  <el-select v-model="item.itemPriority" style='width:25%;' class='c_p5'>
-                     <el-option v-for="(items,index) in item.arrbox" :key='index' :label="items.title" :value="index" ></el-option>
+                     <el-option v-for="(items,index) in getchildDate(item.questionPriority)" :key='index' v-if="items.title!=''"  :label="items.title" :value="index" ></el-option>
                 </el-select>
                 <span class='delconditions' @click='delconditions(indexs)'  v-if="indexs!=0" >删除条件</span>
                 </div>
@@ -35,110 +35,206 @@
 </template>
 <script>
 export default {
-  props: ["isShows", "isFalse", "tableIndex", "dataInfo"],
+  props: ["isShows", "isFalse", "tableIndex", "dataInfo", "isOr", "isCheck"],
   data() {
     return {
-      // isShows:false,
+      indexShow: "",
       showConditionList: [
         {
-          // or: "0",
-          id:"",
-          questionPriority: '',
+          id: "",
+          questionPriority: "",
           conditionType: 1,
-          itemPriority:"",
-          arrAll:[],
-          arrbox:[]
+          itemPriority: ""
+          // arrAll: [],
+          // arrbox: ""
         }
-      ],
+      ]
     };
   },
   computed: {
-    getUserIcons() {
-    return this.$store.state.ques.querData.filter(ele=>{
-        return (ele.questionType!==3&&ele.questionType!=0)
-      })
+    getUserIcons() { //获取不是分页的数据
+      return this.$store.state.ques.querData.filter(ele => {
+        return ele.questionType != 0;
+      });
     },
-    getLen(){
-     return this.$store.state.ques.querData.filter(ele=>{
-        return (ele.questionType!==3&&ele.questionType!=0)
-      }).length
+    getLen() {// 获取不是分页的数据的长度
+      return this.$store.state.ques.querData.filter(ele => {
+        return ele.questionType != 0;
+      }).length;
     },
-    gets(){
-      return this.$store.state.ques.setDate
+    gets() {
+      return this.$store.state.ques.setDate;
     }
   },
   created() {
-     
-    if(this.gets.length!=0){
-       this.showConditionList= [
-        {
-          // or: "0",
-          id:"",
-          questionPriority:"",
-          conditionType: 1,
-          itemPriority:"",
-          arrAll:[],
-          arrbox:[]
-        }
-      ] 
-      for(let i = 0;i<this.gets.data.length;i++){
-        let data = this.gets.data[i]
-        this.showConditionList.push(data)
-      }
-    }
-    
-
+   this.getdate(); //获取下拉框的数据
   },
   methods: {
-    //保存数据源
-    saveTable() {
-     
-      function relateArr(collection){
-        let flag = ''
-          for (var i = 0,len = collection.length;i < len;i++) {
-          var count = 0;
-              for (var j = 0;j < len;j++) {
-                  if ( (collection[i].id === collection[j].id) &&(collection[i].itemPriority === collection[j].itemPriority && collection[i].conditionType === collection[j].conditionType&& collection[i].questionPriority === collection[j].questionPriority)) {
-                      count = count + 1;
-                  }
-              }
-              if (count > 1) {
-                  flag = true;
-              }
-              else {
-                  flag = false;
-              }
-          }
-          return flag;
+    getdate(){
+    this.indexShow = sessionStorage.getItem("sortNum");
+    console.log(this.gets)
+      if (this.gets.length != 0&&this.gets.data!=undefined) {
+        let newArr = [];
+        for (let i = 0; i < this.gets.data.length; i++) {
+          let data = this.gets.data[i];
+          newArr.push(data);
+        }
+        this.showConditionList = newArr;
       }
-       if(relateArr(this.showConditionList)){
+    },
+    binarySearch(data, item) { //二分查找法查找数据
+      var h = data.length - 1,
+        l = 0;
+      while (l <= h) {
+        var m = Math.floor((h + l) / 2);
+        if (data[m].id == item) {
+          return data[m].voteItems;
+        }
+        if (item > data[m].id) {
+          l = m + 1;
+        } else {
+          h = m - 1;
+        }
+      }
+      return false;
+    },
+    getchildDate(id) { //返回查找到的数据
+      return this.binarySearch(this.getUserIcons, id)
+        ? this.binarySearch(this.getUserIcons, id)
+        : [{ title: "空" }];
+    },
+    updatedfn() {  //更新数据
+      console.log(this.gets)
+      if (this.gets.length != 0) {
+        let newArr = [];
+       
+        for (let i = 0; i < this.gets.length; i++) {
+          let data = this.gets[i].data;
+          newArr.push(...data);
+        }
+       
+       
+        this.showConditionList = newArr;
+        console.log(this.showConditionList)
+      }
+    },
+    saveOne() { //保存不是重复的数据
+      function relateArr(collection) {
+        let flag = "";
+        for (var i = 0, len = collection.length; i < len; i++) {
+          var count = 0;
+          for (var j = 0; j < len; j++) {
+            if (
+              collection[i].id === collection[j].id &&
+              (collection[i].itemPriority === collection[j].itemPriority &&
+                collection[i].conditionType === collection[j].conditionType &&
+                collection[i].questionPriority ===
+                  collection[j].questionPriority)
+            ) {
+              count = count + 1;
+            }
+          }
+          if (count > 1) {
+            flag = true;
+          } else {
+            flag = false;
+          }
+        }
+        return flag;
+      }
+      if (relateArr(this.showConditionList)) {
         this.errorMessage("无法添加重复项");
         return false;
       }
-      for(let i  = 0 ;i<this.showConditionList.length;i++){
-        console.log((this.showConditionList[i].itemPriority) +" "+(this.showConditionList[i].questionPriority))
-        if(!((this.showConditionList[i].itemPriority != "")&&(this.showConditionList[i].questionPriority !=""))){
-           this.errorMessage("不能填加空数据");
-           return false;
+      for (let i = 0; i < this.showConditionList.length; i++) {
+        if (
+          !(this.showConditionList[i].itemPriority !== "") ||
+          !(this.showConditionList[i].questionPriority !== "")
+        ) {
+          this.errorMessage("不能添加空数据");
+          return false;
         }
-       
       }
-       
-      this.$emit("saveTable", {ishow:false,index:this.tableIndex,tableInfo:this.showConditionList});
-     
+      let newArr = [...this.showConditionList];
+      return newArr;
     },
-    
+    clearInput() {  //清空数据
+      this.showConditionList = [
+        {
+          id: "",
+          questionPriority: "",
+          conditionType: 1,
+          itemPriority: ""
+          // arrAll: [],
+          // arrbox: ""
+        }
+      ];
+    },
+    //保存数据源
+    saveTable() {
+      function relateArr(collection) {
+        let flag = false;
+        for (var i = 0, len = collection.length; i < len; i++) {
+          var count = 0;
+          for (var j = 0; j < len; j++) {
+            if (
+              collection[i].id === collection[j].id &&
+              (collection[i].itemPriority === collection[j].itemPriority &&
+                collection[i].conditionType === collection[j].conditionType &&
+                collection[i].questionPriority ===
+                  collection[j].questionPriority)
+            ) {
+              count = count + 1;
+            }
+          }
+          if (count > 1) {
+            flag = true;
+          } else {
+            flag = false;
+          }
+        }
+        return flag;
+      }
+      if (relateArr(this.showConditionList)) {
+        this.errorMessage("无法添加重复项");
+        return false;
+      }
+      for (let i = 0; i < this.showConditionList.length; i++) {
+        if (
+          !(this.showConditionList[i].itemPriority !== "") ||
+          !(this.showConditionList[i].questionPriority !== "")
+        ) {
+          this.errorMessage("不能添加空数据");
+          return false;
+        }
+      }
+      this.$emit("saveTable", {
+        ishow: false,
+        index: this.tableIndex,
+        tableInfo: this.showConditionList
+      });
+      this.gets.data = [
+        {
+          id: "",
+          questionPriority: "",
+          conditionType: 1,
+          itemPriority: ""
+          // arrAll: [],
+          // arrbox: []
+        }
+      ];
+    },
+
     //添加条件
     addconditions() {
       this.showConditionList.push({
-          // or: "0",
-          id:"",
-          questionPriority: '',
-          conditionType: 1,
-          itemPriority:"",
-          arrAll:[],
-          arrbox:[]
-        })
+        id: "",
+        questionPriority: "",
+        conditionType: 1,
+        itemPriority: ""
+        // arrAll: [],
+        // arrbox: []
+      });
     },
     //显示隐藏
     isShow() {
@@ -148,15 +244,20 @@ export default {
     delconditions(index) {
       this.showConditionList.splice(index, 1);
     },
-    changeVal(id,index,data,i){
-      this.showConditionList[index]['id'] = id;  //复制id
-      this.showConditionList[index].arrAll = data //存储父级的数据
-      this.showConditionList[index].arrbox = [...data.voteItems] //存储子集的数据
-
+    changeVal(id, index, data, i) {
+      if (data.voteItems != undefined) {
+        this.showConditionList[index]["id"] = id; //复制id
+        // this.showConditionList[index].arrAll = data; //存储父级的数据
+        // this.showConditionList[index].arrbox = id; //存储子集的数据
+      } else {
+        this.showConditionList[index]["id"] = id; //复制id
+        // this.showConditionList[index].arrAll = data; //存储父级的数据
+        // this.showConditionList[index].arrbox = id; //存储子集的数据
+      }
     },
     //关闭
     clearTable() {
-      // this.$root.$emit("saveTable", { ishow: false, index: this.tableIndex });
+      this.$root.$emit("clearTable", { ishow: false, index: this.tableIndex });
     }
   }
 };

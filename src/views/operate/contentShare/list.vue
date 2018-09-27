@@ -59,7 +59,7 @@
       </el-table-column>
        <el-table-column  label="操作"   align="center">
         <div slot-scope="scope">
-            <cms-button type="view" @click.native="routerLink('/contentShare/view','update',scope.row.contentId)"v-perms="'/contentShare/view'">
+            <cms-button type="view" @click.native="routerLink('/contentShare/view','update',scope.row.contentId)" v-perms="'/contentShare/view'">
             </cms-button>
             <cms-button type="delete" @click.native="deleteBatch($api.contentShareDelete,scope.row.id)" v-perms="'/contentShare/delete'">
             </cms-button>
